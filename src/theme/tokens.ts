@@ -1,0 +1,25 @@
+export const theme = {
+  colors: {
+    page: '#f5f1ea',
+    panel: '#fffdf8',
+    ink: '#201b18',
+    muted: '#6d645d',
+    rule: '#d8cec3',
+    ruleLight: '#e8e0d5',
+    accent: '#955f3b',
+    accentSoft: 'rgba(149, 95, 59, 0.08)',
+    accentBorder: 'rgba(149, 95, 59, 0.28)',
+    green: '#2b7a4b',
+    greenBg: 'rgba(43, 122, 75, 0.08)',
+    greenBorder: 'rgba(43, 122, 75, 0.25)',
+    red: '#b33927',
+    redBg: 'rgba(179, 57, 39, 0.08)',
+    redBorder: 'rgba(179, 57, 39, 0.28)',
+    blue: '#2563eb',
+  },
+  fonts: {
+    serif: '"Newsreader", Georgia, "Times New Roman", serif',
+    sans: '"Pretendard", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", sans-serif',
+    mono: '"SF Mono", "Fira Code", "JetBrains Mono", ui-monospace, monospace',
+  },
+} as const
