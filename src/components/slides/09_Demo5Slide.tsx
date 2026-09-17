@@ -7,7 +7,7 @@ export const Demo5Slide: React.FC = () => {
     <Slide
       id="demo5"
       eyebrow="Demo 5 · Interactive Obstacle Wrapping"
-      title="3-5. 데모 5 : ShapeFlow — 자유 형태 장애물 텍스트 래핑 (60fps 커서 라우팅)"
+      title="7-5. 데모 5 : ShapeFlow — 자유 형태 장애물 텍스트 래핑 (60fps 커서 라우팅)"
       subtitle={
         <>
           CSS <code>float</code>이나 <code>shape-outside</code>는 장애물의 한쪽 면으로만 텍스트를 흘립니다.

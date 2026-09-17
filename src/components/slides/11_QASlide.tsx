@@ -6,7 +6,6 @@ export const QASlide: React.FC = () => {
     <Slide
       id="qa"
       style={{ textAlign: 'center', alignItems: 'center' }}
-      eyebrow="Chapter 5 · Q&A"
       title={<h1 style={{ fontSize: 'clamp(3rem, 7vw, 4.5rem)', marginBottom: '12px' }}>Q &amp; A</h1>}
       subtitle={
         <span style={{ textAlign: 'center', maxWidth: '600px', display: 'inline-block' }}>
@@ -16,10 +15,8 @@ export const QASlide: React.FC = () => {
         </span>
       }
     >
+      {/* 마지막에 GitHub 링크 */}
       <div style={{ display: 'flex', gap: '12px', justifyContent: 'center', marginTop: '20px', flexWrap: 'wrap' }}>
-        <HudChip>GitHub: @chenglou/pretext</HudChip>
-        <HudChip>Presenter: Jake Park</HudChip>
-        <HudChip variant="highlight">Zero-Reflow Achieved</HudChip>
       </div>
     </Slide>
   );

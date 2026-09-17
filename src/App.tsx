@@ -15,6 +15,7 @@ import {
   Demo5Slide,
   SummarySlide,
   QASlide,
+  ReferencesSlide,
 } from './components/slides';
 
 export const App: React.FC = () => {
@@ -43,6 +44,7 @@ export const App: React.FC = () => {
         <Demo5Slide />
         <SummarySlide />
         <QASlide />
+        <ReferencesSlide />
       </main>
 
       <footer>

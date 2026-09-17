@@ -14,18 +14,17 @@ interface PipelineEngine {
   subtitle: string;
   steps: FlowStep[];
 }
-
 const PIPELINE_ENGINES: PipelineEngine[] = [
   {
     tag: 'Legacy Model',
     tagVariant: 'accent',
-    name: '구형 웹킷 / 초기 Blink - Legacy WebCore',
+    name: '구형 Webkit / 구형 WebCore / 초기 Blink',
     subtitle: 'RenderObject 가변 트리 직접 변이 (동기 렌더링 락)',
     steps: [
-      { title: '① DOM & Style', desc: 'Layout Tree 구성' },
-      { title: '② In-place Reflow', desc: '💥 가변 트리 순회 수정', variant: 'danger' },
-      { title: '③ Paint', desc: 'CPU 비트맵 래스터' },
-      { title: '④ Composite', desc: 'Z-Index 레이어 복사' },
+      { title: '① DOM & Style', desc: 'RenderTree 생성 (DOM + CSSOM)' },
+      { title: '② Layout(Reflow)', desc: '💥 RenderObject 좌표·크기 직접 수정', variant: 'danger' },
+      { title: '③ Paint', desc: 'CPU 비트맵 직접 래스터화' },
+      { title: '④ Composite', desc: 'GPU 전송 및 Z-Order 레이어 합성' },
     ],
   },
   {
@@ -34,22 +33,22 @@ const PIPELINE_ENGINES: PipelineEngine[] = [
     name: 'RenderingNG / LayoutNG',
     subtitle: '순수 함수 모델 & 불변 PhysicalBoxFragment 생성',
     steps: [
-      { title: '① DOM & Style', desc: 'Layout Tree 생성' },
-      { title: '② LayoutNG', desc: '💥 불변 프래그먼트 연산', variant: 'danger' },
-      { title: '③ Pre-Paint', desc: 'Property Trees 빌드' },
-      { title: '④ Commit (cc)', desc: '🚀 GPU Viz 백그라운드', variant: 'success' },
+      { title: '① Style', desc: 'ComputedStyle 매칭 & Layout Tree 구성' },
+      { title: '② LayoutNG', desc: '💥 ConstraintSpace ➔ 불변 Fragment 연산', variant: 'danger' },
+      { title: '③ Pre-Paint & Paint', desc: 'Property Trees 빌드 & PaintOp 기록' },
+      { title: '④ Commit & Composite', desc: '🚀 Viz 디스플레이 백그라운드 출력', variant: 'success' },
     ],
   },
   {
     tag: 'WebKit Modern',
     tagVariant: 'accent',
-    name: 'WebKit / LFC Engine',
-    subtitle: '불변 지오메트리 캐싱 & DisplayList 직렬화',
+    name: 'WebKit / Modern LFC',
+    subtitle: '독립 포매팅 컨텍스트 & 지오메트리 분리 캐싱',
     steps: [
-      { title: '① Style Match', desc: 'CSS JIT 매칭' },
-      { title: '② Layout (LFC)', desc: '💥 Formatting Context', variant: 'danger' },
-      { title: '③ Paint', desc: 'DisplayList 기록' },
-      { title: '④ CoreAnimation', desc: '🚀 CALayer 화면 직행', variant: 'success' },
+      { title: '① Style', desc: 'CSS JIT 매칭 & RenderObject 확정' },
+      { title: '② Layout (LFC)', desc: '💥 포매팅 컨텍스트별 분리 연산 (BFC/IFC)', variant: 'danger' },
+      { title: '③ Geometry & Paint', desc: '레이어 변형 매핑 & DisplayList 기록' },
+      { title: '④ CA Commit', desc: '🚀 OS CoreAnimation(CALayer) 화면 출력', variant: 'success' },
     ],
   },
 ];
@@ -58,8 +57,8 @@ export const PipelineSlide: React.FC = () => {
   return (
     <Slide
       id="pipeline"
-      eyebrow="Chapter 2-1 · Modern Browser Architecture"
-      title="⚙️ 웹 브라우저 렌더링 파이프라인의 진화"
+      eyebrow="Modern Browser Architecture"
+      title="4. 웹 브라우저 렌더링 파이프라인"
       subtitle="3대 엔진 파이프라인 비교와 Layout의 비용"
     >
       {/* 3대 브라우저 엔진 파이프라인 가로방향 3줄 다이어그램 */}
@@ -98,90 +97,9 @@ export const PipelineSlide: React.FC = () => {
         ))}
       </div>
 
-      {/* 2단 심층 분석 카드 (LayoutNG 압도적 비용 vs 스레드 분리와 Jank) */}
-      <div
-        style={{
-          display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
-          gap: '14px',
-          margin: '16px 0',
-        }}
-      >
-        <div
-          style={{
-            background: 'var(--red-bg)',
-            border: '1px solid var(--red-border)',
-            padding: '14px 16px',
-            borderRadius: '12px',
-          }}
-        >
-          <div
-            style={{
-              color: 'var(--red)',
-              fontWeight: 700,
-              fontSize: '14px',
-              marginBottom: '6px',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '6px',
-            }}
-          >
-            <span>💥</span>
-            <span>Reflow(Layout) 연쇄 재계산 비용</span>
-          </div>
-          <div style={{ fontSize: '0.84rem', fontFamily: 'var(--mono)', color: 'var(--ink)', marginBottom: '8px', lineHeight: 1.5 }}>
-            <span style={{ fontWeight: 600 }}>1자 변경</span> / <code>offsetHeight</code> 질의 → <span style={{ fontWeight: 600 }}>연쇄 지오메트리 재계산</span>
-            <br />→ <span style={{ fontWeight: 600, color: 'var(--red)' }}>메인 스레드 독점</span>
-          </div>
-          <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
-            <span className="badge red">#C++레이아웃연산</span>
-            <span className="badge red">#메인스레드독점</span>
-          </div>
-        </div>
-
-        <div
-          style={{
-            background: 'var(--panel)',
-            border: '1px solid var(--rule)',
-            padding: '14px 16px',
-            borderRadius: '12px',
-            boxShadow: '0 2px 8px rgba(54, 40, 23, 0.03)',
-          }}
-        >
-          <div
-            style={{
-              color: 'var(--accent)',
-              fontWeight: 700,
-              fontSize: '14px',
-              marginBottom: '6px',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '6px',
-            }}
-          >
-            <span>⚠️</span>
-            <span>스레드 분리와 화면 끊김 (Jank)</span>
-          </div>
-          <div style={{ fontSize: '0.84rem', fontFamily: 'var(--mono)', color: 'var(--ink)', marginBottom: '8px', lineHeight: 1.5 }}>
-            <span style={{ fontWeight: 600 }}>메인 스레드 Layout 락</span> → Compositor 커밋 정지
-            <br />→ <span style={{ fontWeight: 600, color: 'var(--accent)' }}>Frame Drop (Jank)</span>
-          </div>
-          <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
-            <span className="badge accent">#Compositor중단</span>
-            <span className="badge accent">#FrameDrop(Jank)</span>
-          </div>
-        </div>
-      </div>
-
-      <Callout
-        variant="good"
-        title="💡 핵심 한계: 최신 엔진(RenderingNG / LFC)도 DOM 질의 앞에서는 무력"
-        style={{ marginTop: '16px' }}
-      >
-        <div style={{ fontSize: '0.88rem', fontFamily: 'var(--mono)', color: 'var(--ink)' }}>
-          <span style={{ fontWeight: 600 }}>DOM Read</span> → C++ <code>UpdateStyleAndLayout()</code> 강제 호출 → <span style={{ fontWeight: 600 }}>파이프라인 무력화</span>
-        </div>
-      </Callout>
+      <p style={{ fontSize: '0.98rem', lineHeight: 1.75, color: 'var(--ink)', margin: 0 }}>
+        👉🏻 Layout: 화면에 표시될 요소들의 기하학적 정보(크기: Width·Height, 위치: X·Y 좌표)를 계산해서 확정하는건 변하지 않고 동일
+      </p>
     </Slide>
   );
 };

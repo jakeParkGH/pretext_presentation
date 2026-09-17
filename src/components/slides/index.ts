@@ -11,3 +11,4 @@ export * from './08_Demo4Slide';
 export * from './09_Demo5Slide';
 export * from './10_SummarySlide';
 export * from './11_QASlide';
+export * from './12_ReferencesSlide';

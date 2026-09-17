@@ -5,8 +5,8 @@ export const QueuingSlide: React.FC = () => {
   return (
     <Slide
       id="queuing"
-      eyebrow="Chapter 2-2 · VSync Signal & Forced Synchronous Layout"
-      title="⏱️ Layout Queuing과 VSync, 그리고 강제 플러시"
+      eyebrow="VSync Signal & Forced Synchronous Layout"
+      title="5. Layout Queuing과 VSync, 그리고 Forced Reflow"
       subtitle="VSync 신호와 강제 플러시의 메커니즘"
     >
       <Card style={{ marginBottom: '20px', padding: '18px 20px' }}>
@@ -18,25 +18,28 @@ export const QueuingSlide: React.FC = () => {
           </div>
           <span className="flow-arrow">➔</span>
           <div className="flow-box" style={{ flex: '1 1 140px', minWidth: '130px', padding: '10px 8px' }}>
-            OS 서브시스템
+            OS SubSystem
             <small>CVDisplayLink / DWM</small>
           </div>
           <span className="flow-arrow">➔</span>
           <div className="flow-box" style={{ flex: '1 1 140px', minWidth: '130px', padding: '10px 8px' }}>
-            GPU 프로세스 (Viz)
+            GPU 프로세스(Chromium)
             <small>BeginFrame IPC</small>
           </div>
           <span className="flow-arrow">➔</span>
           <div className="flow-box" style={{ flex: '1 1 140px', minWidth: '130px', padding: '10px 8px' }}>
-            Compositor
+            컴포지터 스레드
             <small>BeginMainFrame</small>
           </div>
           <span className="flow-arrow">➔</span>
           <div className="flow-box hot" style={{ flex: '1 1 140px', minWidth: '130px', padding: '10px 8px' }}>
-            메인 스레드 (Blink)
+            메인 스레드
             <small>rAF → Layout → Paint</small>
           </div>
         </div>
+        <p style={{ fontSize: '0.84rem', color: 'var(--muted)', marginBottom: '10px' }}>
+          👉🏻 Vsync 수신 간격은 디스플레이 하드웨어 스펙에 따라 (16.67ms: 60Hz / 8.33ms: 120Hz / 6.94ms: 144Hz) 등으로 나뉜다
+        </p>
       </Card>
 
       <div className="grid-2">
@@ -70,25 +73,25 @@ export const QueuingSlide: React.FC = () => {
       </div>
 
       <Callout
-        variant="good"
-        title="💡 왜 canvas.measureText()는 Reflow를 일으키지 않는가? (아키텍처 비교)"
+        variant="warn"
+        title="💡 Layout Thrashing (레이아웃 스래싱)"
         style={{ marginTop: '20px' }}
       >
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '12px', marginTop: '8px' }}>
           <div style={{ background: '#fff', padding: '12px', borderRadius: '8px', border: '1px solid var(--red-border)' }}>
             <div style={{ fontWeight: 600, color: 'var(--red)', marginBottom: '4px', fontSize: '0.9rem' }}>
-              DOM offsetHeight
+              쓰기(Write) API 호출로 인한 더티 플래그 마킹 (Invalidation)
             </div>
             <div style={{ fontSize: '0.84rem', fontFamily: 'var(--mono)', color: 'var(--ink)' }}>
-              Layout Tree 강제 빌드 → 전역 리플로우
+              마킹된 상태에서 읽기(Read) API 호출로 인한 강제 레이아웃 계산 → 전역 리플로우
             </div>
           </div>
           <div style={{ background: '#fff', padding: '12px', borderRadius: '8px', border: '1px solid var(--green-border)' }}>
             <div style={{ fontWeight: 600, color: 'var(--green)', marginBottom: '4px', fontSize: '0.9rem' }}>
-              canvas.measureText()
+              이 때문에 복잡한 앱이나 애니메이션 라이브러리(FastDOM 등)에서는
             </div>
             <div style={{ fontSize: '0.84rem', fontFamily: 'var(--mono)', color: 'var(--ink)' }}>
-              Layout Tree 우회 → OS 폰트 엔진 직행 → Reflow 0회
+              글로벌 큐를 둬서 "모든 컴포넌트의 Read 작업을 먼저 전부 실행한 뒤, 모든 Write 작업을 몰아서 실행"하는 방식으로 스케줄링을 통일
             </div>
           </div>
         </div>

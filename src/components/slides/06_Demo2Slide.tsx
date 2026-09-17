@@ -7,7 +7,7 @@ export const Demo2Slide: React.FC = () => {
     <Slide
       id="demo2"
       eyebrow="Demo 2 · Zero-Reflow Height Transition"
-      title="3-2. 데모 2 : Accordion — DOM 측정 없는 무결점 아코디언 (Zero Reflow Height Transition)"
+      title="7-2. 데모 2 : Accordion — DOM 측정 없는 무결점 아코디언 (Zero Reflow Height Transition)"
       subtitle={
         <>
           CSS <code>height: auto</code>에는 transition이 동작하지 않습니다.

@@ -11,7 +11,8 @@ export type SlideId =
   | 'demo4'
   | 'demo5'
   | 'summary'
-  | 'qa';
+  | 'qa'
+  | 'references';
 
 export interface NavItem {
   id: SlideId;
@@ -19,17 +20,18 @@ export interface NavItem {
 }
 
 export const NAV_ITEMS: NavItem[] = [
-  { id: 'cover', label: '1-1. Intro' },
-  { id: 'background', label: '1-2. 배경' },
-  { id: 'problem', label: '1-3. Problem' },
-  { id: 'pipeline', label: '2-1. Pipeline' },
-  { id: 'queuing', label: '2-2. VSync & Thrashing' },
-  { id: 'resolve', label: '2-3. Resolve' },
-  { id: 'demo1', label: '3-1. BasicMeasure' },
-  { id: 'demo2', label: '3-2. Accordion' },
-  { id: 'demo3', label: '3-3. Streaming' },
-  { id: 'demo4', label: '3-4. 가상스크롤' },
-  { id: 'demo5', label: '3-5. ShapeFlow' },
-  { id: 'summary', label: '4. 정리' },
-  { id: 'qa', label: '5. Q&A' },
+  { id: 'cover', label: '1. Intro' },
+  { id: 'background', label: '2. 배경' },
+  { id: 'problem', label: '3. Problem' },
+  { id: 'pipeline', label: '4. Pipeline' },
+  { id: 'queuing', label: '5. VSync & Thrashing' },
+  { id: 'resolve', label: '6. Resolve' },
+  { id: 'demo1', label: '7-1. BasicMeasure' },
+  { id: 'demo2', label: '7-2. Accordion' },
+  { id: 'demo3', label: '7-3. Streaming' },
+  { id: 'demo4', label: '7-4. 가상스크롤' },
+  { id: 'demo5', label: '7-5. ShapeFlow' },
+  { id: 'summary', label: '8. 정리' },
+  { id: 'qa', label: '9. Q&A' },
+  { id: 'references', label: '10. 참고문헌' },
 ];

@@ -9,25 +9,37 @@ export const GRID_SNIPPETS: CodeSnippet[] = [
   {
     tabLabel: 'TanStack + Pretext 연동',
     filePath: 'src/demos/TanStackFeedDemo.tsx',
-    code: `// 1. [Cold Path]: 텍스트 변경 시 1회만 prepare() 호출
-const prepared = prepare(text, '16px Pretendard, sans-serif', {
-  whiteSpace: 'pre-wrap',
-  wordBreak: 'keep-all',
-});
+    code: `// 1. [Cold Path]: 무한 스크롤 대비 WeakMap 증분 캐싱 (너비 비의존)
+// 💡 스크롤로 새 페이지가 추가되어도 기존 아이템은 O(1) 통과, 신규 청크만 prepare() 1회 실행!
+const preparedCache = useRef(new WeakMap<FeedItem, PreparedText>());
+
+const preparedItems = useMemo(() => {
+  return items.map(item => {
+    let prepared = preparedCache.current.get(item);
+    if (!prepared) {
+      prepared = prepare(item.prompt, '16px Pretendard, sans-serif', {
+        whiteSpace: 'pre-wrap',
+        wordBreak: 'keep-all',
+      });
+      preparedCache.current.set(item, prepared);
+    }
+    return { ...item, preparedPrompt: prepared };
+  });
+}, [items]); // 🚀 feedWidth 의존성 전무 + 신규 아이템만 증분 계산!
 
 // 2. [Hot Path]: 컨테이너 너비 변경 시 순수 산술 연산으로 전체 높이 배열 사전 생성 (0.02ms)
 const precalculatedHeights = useMemo(() => {
   const textWidth = feedWidth - PADDING_HORIZ;
-  return items.map(item => {
+  return preparedItems.map(item => {
     const imageHeight = Math.round(textWidth / item.aspectRatio);
     const { height: textHeight } = layout(item.preparedPrompt, textWidth, 24);
     return FIXED_OVERHEAD + imageHeight + textHeight;
   });
-}, [items, feedWidth]);
+}, [preparedItems, feedWidth]); // 🚀 너비가 바뀔 땐 오직 layout()만 초고속 반복!
 
 // 3. [TanStack Virtual 설정]: DOM 역측정(measureElement)을 아예 제거!
 const rowVirtualizer = useVirtualizer({
-  count: items.length,
+  count: preparedItems.length,
   getScrollElement: () => scrollContainerRef.current,
   estimateSize: (index) => precalculatedHeights[index] ?? 500,
   overscan: 5,
@@ -46,11 +58,11 @@ const rowVirtualizer = useVirtualizer({
       transform: \`translate3d(0, \${virtualRow.start}px, 0)\`,
     }}
   >
-    <FeedCard card={items[virtualRow.index]} />
+    <FeedCard card={preparedItems[virtualRow.index]} />
   </div>
 ))}`,
     explanation:
-      '동적 높이 가상화에서 가장 큰 병목은 DOM을 그린 후 offsetHeight를 역측정하는 것입니다. Pretext의 사전 계산 높이를 estimateSize에 그대로 주입하면 measureElement 자체가 불필요해져 연쇄 동기 리플로우(Layout Thrashing)가 원천 차단됩니다.',
+      '동적 높이 가상화에서 가장 큰 병목은 DOM을 그린 후 offsetHeight를 역측정하는 것입니다. Pretext의 사전 계산 높이를 estimateSize에 그대로 주입하면 measureElement 자체가 불필요해져 연쇄 동기 리플로우(Layout Thrashing)가 원천 차단됩니다. (무한 스크롤 환경에서는 WeakMap 캐시를 활용해 새로 유입된 페이지 청크만 1회 증분 prepare하여 기존 데이터 재연산을 방지합니다.)',
   },
   {
     tabLabel: 'GPU 합성 직행 (Transform vs Top)',
@@ -92,11 +104,14 @@ const fixedUiHeight = 24 + 10 + 44 + 12 + 12 + 16 + 4 + 12 + 36 + (16 * 2) + 2 +
 //    '16px Pretendard, sans-serif' + { whiteSpace: 'pre-wrap', wordBreak: 'keep-all' }
 const { height: promptHeight, lineCount } = layout(item.preparedPrompt, textWidth, 24);
 
+// 💡 (참고) 다중 요소 + 다중 폰트사이즈 대응:
+//    import { prepareRichInline, walkRichInlineLineRanges } from '@chenglou/pretext/rich-inline';
+
 // 4. 최종 카드 전체 높이 도출 (DOM 렌더링 전 100% 확정)
 const totalCardHeight = fixedUiHeight + imageHeight + promptHeight;
 
 // 💡 1,000장의 카드 전체 높이를 1ms 안에 자바스크립트 힙 메모리 상에서 완벽히 도출!`,
     explanation:
-      '이미지 비율과 UI 여백은 원래 브라우저 없이도 즉시 알 수 있었습니다. 유일하게 DOM 없이는 알 수 없었던 프롬프트 텍스트의 줄바꿈 높이를 Pretext가 순수 숫자로 풀어줌으로써, 개발자가 카드 전체 크기를 100% 자바스크립트 수학식으로 완성할 수 있습니다.',
+      '이미지 비율과 UI 여백은 원래 브라우저 없이도 즉시 알 수 있었습니다. 유일하게 DOM 없이는 알 수 없었던 프롬프트 텍스트의 줄바꿈 높이를 Pretext가 순수 숫자로 풀어줌으로써, 개발자가 카드 전체 크기를 100% 자바스크립트 수학식으로 완성할 수 있습니다. (다중 요소 + 다중 폰트사이즈 대응은 import { prepareRichInline, walkRichInlineLineRanges } from \'@chenglou/pretext/rich-inline\' 으로 계산 가능)',
   },
 ];

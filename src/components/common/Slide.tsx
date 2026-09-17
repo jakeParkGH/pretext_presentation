@@ -24,7 +24,7 @@ export const Slide: React.FC<SlideProps> = ({
     <section id={id} className={`slide ${className}`.trim()} style={style}>
       {eyebrow && <div className="eyebrow">{eyebrow}</div>}
       {title && (typeof title === 'string' ? <h2>{title}</h2> : title)}
-      {subtitle && <p className="subtitle">{subtitle}</p>}
+      {subtitle && <p style={{ fontSize: '1em', lineHeight: '1.8em', marginBottom: '12px' }} className="subtitle">{subtitle}</p>}
       {children}
     </section>
   );

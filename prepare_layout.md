@@ -433,4 +433,3 @@ function calculateTotalListHeight(containerWidth: number): number {
   return totalHeight;
 }
 ```
-DOM을 단 한 번도 마운트하지 않고도 수만 개 아이템의 전체 스크롤 높이와 각 인덱스의 오프셋을 정확히 예측하여 완벽한 60fps 스크롤 경험을 제공합니다.
