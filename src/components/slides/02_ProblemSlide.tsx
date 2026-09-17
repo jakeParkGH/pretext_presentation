@@ -5,7 +5,7 @@ export const ProblemSlide: React.FC = () => {
   return (
     <Slide
       id="problem"
-      eyebrow="Chapter 2 · Problem Analysis"
+      eyebrow="Chapter 1-3 · Problem Analysis"
       title="🚨 문제: 브라우저 리플로우의 치명적 비용"
       subtitle="텍스트 높이나 줄바꿈 위치를 알아내기 위해 관습적으로 호출하던 DOM 측정 API들은 브라우저의 렌더링 최적화를 완전히 파괴합니다."
     >

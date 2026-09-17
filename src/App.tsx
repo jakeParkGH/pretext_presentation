@@ -3,6 +3,7 @@ import { useSlideNav } from './hooks/useSlideNav';
 import { TopNav } from './components/common';
 import {
   IntroSlide,
+  BackgroundSlide,
   ProblemSlide,
   PipelineSlide,
   QueuingSlide,
@@ -29,6 +30,7 @@ export const App: React.FC = () => {
 
       <main className="presentation">
         <IntroSlide />
+        <BackgroundSlide />
         <ProblemSlide />
         <PipelineSlide />
         <QueuingSlide />

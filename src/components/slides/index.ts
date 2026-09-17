@@ -1,4 +1,5 @@
 export * from './01_IntroSlide';
+export * from './02_BackgroundSlide';
 export * from './02_ProblemSlide';
 export * from './03_PipelineSlide';
 export * from './04_QueuingSlide';
