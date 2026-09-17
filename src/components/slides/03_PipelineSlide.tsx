@@ -60,7 +60,7 @@ export const PipelineSlide: React.FC = () => {
       id="pipeline"
       eyebrow="Chapter 2-1 · Modern Browser Architecture"
       title="⚙️ 웹 브라우저 렌더링 파이프라인의 진화"
-      subtitle="RenderingNG 기반 6단계 생명주기와 Layout(지오메트리 계산)의 압도적 비용 계층"
+      subtitle="3대 엔진 파이프라인 비교와 Layout의 비용"
     >
       {/* 3대 브라우저 엔진 파이프라인 가로방향 3줄 다이어그램 */}
       <div className="pipeline-rows-stack">
@@ -111,7 +111,7 @@ export const PipelineSlide: React.FC = () => {
           style={{
             background: 'var(--red-bg)',
             border: '1px solid var(--red-border)',
-            padding: '16px 18px',
+            padding: '14px 16px',
             borderRadius: '12px',
           }}
         >
@@ -120,18 +120,22 @@ export const PipelineSlide: React.FC = () => {
               color: 'var(--red)',
               fontWeight: 700,
               fontSize: '14px',
-              marginBottom: '4px',
+              marginBottom: '6px',
               display: 'flex',
               alignItems: 'center',
               gap: '6px',
             }}
           >
             <span>💥</span>
-            <span>Reflow(Layout) 재계산 비용</span>
+            <span>Reflow(Layout) 연쇄 재계산 비용</span>
           </div>
-          <div style={{ fontSize: '12.5px', color: 'var(--ink)', lineHeight: '1.55', opacity: 0.9 }}>
-            텍스트 1글자 변경이나 <code>offsetHeight</code> 단 1회 질의만으로도 브라우저는 부모·형제 노드의
-            지오메트리를 연쇄 재계산해야 하므로, 렌더러 메인 스레드를 가장 오래 점유합니다.
+          <div style={{ fontSize: '0.84rem', fontFamily: 'var(--mono)', color: 'var(--ink)', marginBottom: '8px', lineHeight: 1.5 }}>
+            <span style={{ fontWeight: 600 }}>1자 변경</span> / <code>offsetHeight</code> 질의 → <span style={{ fontWeight: 600 }}>연쇄 지오메트리 재계산</span>
+            <br />→ <span style={{ fontWeight: 600, color: 'var(--red)' }}>메인 스레드 독점</span>
+          </div>
+          <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
+            <span className="badge red">#C++레이아웃연산</span>
+            <span className="badge red">#메인스레드독점</span>
           </div>
         </div>
 
@@ -139,7 +143,7 @@ export const PipelineSlide: React.FC = () => {
           style={{
             background: 'var(--panel)',
             border: '1px solid var(--rule)',
-            padding: '16px 18px',
+            padding: '14px 16px',
             borderRadius: '12px',
             boxShadow: '0 2px 8px rgba(54, 40, 23, 0.03)',
           }}
@@ -149,7 +153,7 @@ export const PipelineSlide: React.FC = () => {
               color: 'var(--accent)',
               fontWeight: 700,
               fontSize: '14px',
-              marginBottom: '4px',
+              marginBottom: '6px',
               display: 'flex',
               alignItems: 'center',
               gap: '6px',
@@ -158,22 +162,25 @@ export const PipelineSlide: React.FC = () => {
             <span>⚠️</span>
             <span>스레드 분리와 화면 끊김 (Jank)</span>
           </div>
-          <div style={{ fontSize: '12.5px', color: 'var(--muted)', lineHeight: '1.55' }}>
-            메인 스레드가 무거운 레이아웃 연산에 묶이면, 독립 구동되어야 할 GPU 컴포지터(cc / CoreAnimation)의
-            60~120fps 부드러운 출력이 정면 차단되어 프레임 드랍이 발생합니다.
+          <div style={{ fontSize: '0.84rem', fontFamily: 'var(--mono)', color: 'var(--ink)', marginBottom: '8px', lineHeight: 1.5 }}>
+            <span style={{ fontWeight: 600 }}>메인 스레드 Layout 락</span> → Compositor 커밋 정지
+            <br />→ <span style={{ fontWeight: 600, color: 'var(--accent)' }}>Frame Drop (Jank)</span>
+          </div>
+          <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
+            <span className="badge accent">#Compositor중단</span>
+            <span className="badge accent">#FrameDrop(Jank)</span>
           </div>
         </div>
       </div>
 
       <Callout
         variant="good"
-        title="💡 핵심 통찰: 최신 엔진도 왜 텍스트 높이 측정에서 무력한가?"
+        title="💡 핵심 한계: 최신 엔진(RenderingNG / LFC)도 DOM 질의 앞에서는 무력"
         style={{ marginTop: '16px' }}
       >
-        RenderingNG나 LFC 엔진 모두 내부 구조를 불변(Immutable) 프래그먼트로 바꾸어 멀티스레드 페인트를
-        최적화했습니다. 그러나 <strong>JavaScript에서 `offsetHeight`나 `scrollHeight`를 읽는 순간</strong>, C++
-        레이어는 정확한 픽셀 값을 보장하기 위해 <code>Document::UpdateStyleAndLayout()</code>을 호출하여{' '}
-        <strong>모든 텍스트의 줄바꿈을 동기식으로 재계산</strong>해야만 합니다.
+        <div style={{ fontSize: '0.88rem', fontFamily: 'var(--mono)', color: 'var(--ink)' }}>
+          <span style={{ fontWeight: 600 }}>DOM Read</span> → C++ <code>UpdateStyleAndLayout()</code> 강제 호출 → <span style={{ fontWeight: 600 }}>파이프라인 무력화</span>
+        </div>
       </Callout>
     </Slide>
   );

@@ -7,64 +7,77 @@ export const ProblemSlide: React.FC = () => {
       id="problem"
       eyebrow="Chapter 1-3 · Problem Analysis"
       title="🚨 문제: 브라우저 리플로우의 치명적 비용"
-      subtitle="텍스트 높이나 줄바꿈 위치를 알아내기 위해 관습적으로 호출하던 DOM 측정 API들은 브라우저의 렌더링 최적화를 완전히 파괴합니다."
     >
       <VsBlock
         badTitle="❌ 전통적인 DOM 접근 방식"
         badContent={
           <>
-            <ul style={{ fontSize: '0.9rem', paddingLeft: '20px', marginTop: '12px', color: 'var(--ink)' }}>
-              <li>
-                <code>element.offsetHeight</code> / <code>offsetWidth</code>
-              </li>
-              <li>
-                <code>element.getBoundingClientRect()</code>
-              </li>
-              <li>
-                <code>element.scrollHeight</code> / <code>scrollTop</code>
-              </li>
-              <li>
-                <code>window.getComputedStyle(element)</code>
-              </li>
-            </ul>
-            <div style={{ fontSize: '0.85rem', marginTop: '16px', color: 'var(--red)', fontWeight: 500 }}>
-              ➔ 브라우저 VSync 턴을 기다리지 못하고 즉시 동기 레이아웃 강제 실행
-              <br />
-              ➔ 루프 안에서 반복 호출 시 <strong style={{ color: 'var(--red)' }}>Layout Thrashing(연쇄 폭발)</strong>
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px', marginTop: '10px' }}>
+              <code style={{ fontSize: '0.82rem' }}>offsetHeight</code>
+              <code style={{ fontSize: '0.82rem' }}>getBoundingClientRect()</code>
+              <code style={{ fontSize: '0.82rem' }}>scrollHeight</code>
+              <code style={{ fontSize: '0.82rem' }}>getComputedStyle()</code>
+            </div>
+
+            <div style={{ background: '#fff', padding: '12px', borderRadius: '8px', border: '1px solid var(--red-border)', margin: '12px 0', fontSize: '0.85rem', fontFamily: 'var(--mono)', color: 'var(--ink)' }}>
+              DOM Read → VSync 무시 → 동기 Reflow → <strong style={{ color: 'var(--red)' }}>Layout Thrashing</strong>
+            </div>
+
+            <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
+              <span className="badge red">#강제동기레이아웃</span>
+              <span className="badge red">#MainThreadLock</span>
+              <span className="badge red">#O(N)연쇄폭발</span>
             </div>
           </>
         }
         goodTitle="✅ Pretext 순수 산술 방식"
         goodContent={
           <>
-            <ul style={{ fontSize: '0.9rem', paddingLeft: '20px', marginTop: '12px', color: 'var(--ink)' }}>
-              <li>
-                <code>canvas.measureText()</code> (Cold Path 1회만 캐싱)
-              </li>
-              <li>결과를 Typed Array(Float64Array) 메모리에 적재</li>
-              <li>
-                이후 모든 리사이즈·애니메이션은 <em>100% 순수 산술 연산</em>
-              </li>
-              <li>DOM 접근 0회 · Canvas 재호출 0회</li>
-            </ul>
-            <div style={{ fontSize: '0.85rem', marginTop: '16px', color: 'var(--green)', fontWeight: 600 }}>
-              ➔ <strong style={{ color: 'var(--green)' }}>DOM Reflow 0회 완벽 보장</strong>
-              <br />
-              ➔ 프레임당 약 0.0002ms (0.2µs) 연산으로 120Hz 무감속 방어
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px', marginTop: '10px' }}>
+              <code style={{ fontSize: '0.82rem', borderColor: 'var(--green-border)', color: 'var(--green)' }}>prepare() (1회 캐싱)</code>
+              <code style={{ fontSize: '0.82rem', borderColor: 'var(--green-border)', color: 'var(--green)' }}>Float64Array 메모리</code>
+              <code style={{ fontSize: '0.82rem', borderColor: 'var(--green-border)', color: 'var(--green)' }}>layout() (순수 산술)</code>
+            </div>
+
+            <div style={{ background: '#fff', padding: '12px', borderRadius: '8px', border: '1px solid var(--green-border)', margin: '12px 0', fontSize: '0.85rem', fontFamily: 'var(--mono)', color: 'var(--ink)' }}>
+              1회 측정 → Typed Array → 순수 산술 → <strong style={{ color: 'var(--green)' }}>Reflow 0회</strong>
+            </div>
+
+            <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
+              <span className="badge green">#Reflow0회</span>
+              <span className="badge green">#0.0002ms(0.2µs)</span>
+              <span className="badge green">#120Hz무감속</span>
             </div>
           </>
         }
       />
 
+      {/* Layout Thrashing 악순환 다이어그램 */}
       <Callout
         variant="warn"
-        title="💥 Layout Thrashing (레이아웃 스래싱)이란?"
+        title="💥 Layout Thrashing (레이아웃 스래싱) 연쇄 폭발 메커니즘"
         style={{ marginTop: '20px' }}
       >
-        JavaScript 코드가 <code>DOM 수정 (Write) ➔ 기하 수치 조회 (Read) ➔ DOM 수정 (Write)</code>을 반복할 때,
-        브라우저는 매 회차마다 대기열을 강제로 플러시하고 레이아웃 트리를 통째로 다시 계산합니다. 요소 N개를 순회하면
-        1프레임(16.6ms) 안에서 <strong>O(N)번의 C++ 레이아웃 재계산</strong>이 동기 실행되어 메인 스레드가 완전히
-        멈춥니다.
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '8px', margin: '10px 0 6px', fontFamily: 'var(--mono)', fontSize: '0.85rem' }}>
+          <div style={{ background: '#fff', padding: '8px 12px', borderRadius: '8px', border: '1px solid var(--rule)' }}>
+            ① DOM 수정 (Write)
+          </div>
+          <span>➔</span>
+          <div style={{ background: '#fff', padding: '8px 12px', borderRadius: '8px', border: '1px solid var(--red-border)', color: 'var(--red)', fontWeight: 600 }}>
+            ② 수치 조회 (Read)
+          </div>
+          <span>➔</span>
+          <div style={{ background: '#fff', padding: '8px 12px', borderRadius: '8px', border: '1px solid var(--red-border)', color: 'var(--red)', fontWeight: 600 }}>
+            ③ 대기열 강제 플러시
+          </div>
+          <span>➔</span>
+          <div style={{ background: '#fff', padding: '8px 12px', borderRadius: '8px', border: '1px solid var(--red-border)', color: 'var(--red)', fontWeight: 700 }}>
+            ④ O(N)번 C++ 레이아웃 재계산
+          </div>
+        </div>
+        <div style={{ fontSize: '0.85rem', color: 'var(--muted)', marginTop: '8px' }}>
+          ※ N개 요소 × 동기 Layout = 메인 스레드 정지
+        </div>
       </Callout>
     </Slide>
   );

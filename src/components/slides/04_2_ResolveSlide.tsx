@@ -7,26 +7,32 @@ export const ResolveSlide: React.FC = () => {
       id="resolve"
       eyebrow="Chapter 2-3 · Solution & Core Engine"
       title="💡 해결: Zero-DOM 산술 레이아웃과 2-Phase 엔진"
-      subtitle="브라우저 텍스트 포맷팅 규칙을 자바스크립트로 이식하여 DOM 리플로우를 원천 차단하고 마이크로초 단위 연산을 실현"
     >
-      {/* 1. 상단: Zero-DOM 산술 레이아웃 패러다임 */}
-      <Card style={{ borderLeft: '4px solid var(--green)', marginBottom: '20px' }}>
-        <h3 style={{ color: 'var(--green)', fontSize: '1.15rem', marginBottom: '8px' }}>
-          ⚡ Zero-DOM 산술 레이아웃 패러다임
-        </h3>
-        <p style={{ fontSize: '0.98rem', lineHeight: 1.7, color: 'var(--ink)', margin: 0 }}>
-          <em>"텍스트 높이와 줄바꿈을 굳이 매번 무거운 브라우저 C++ DOM 렌더러에 물어봐야 하는가?"</em>
-          <br />
-          브라우저의 텍스트 줄바꿈 명세(유니코드 UAX #14, CSS <code>white-space: normal</code>)를 순수 자바스크립트 엔진으로 이식하여,{' '}
-          <strong>너비 비의존적인 1회 측정 캐싱(prepare)</strong>과 <strong>너비 의존적인 초고속 산술 연산(layout)</strong>으로
-          역할을 엄격히 분리했습니다. DOM을 전혀 건드리지 않고 텍스트 높이를 마이크로초 단위에 예측합니다.
-        </p>
+      {/* 1. 상단: 3대 핵심 성과 메트릭 바 */}
+      <Card style={{ borderLeft: '4px solid var(--green)', marginBottom: '18px', padding: '18px 20px' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '12px', textAlign: 'center' }}>
+          <div style={{ background: '#fff', padding: '10px 14px', borderRadius: '10px', border: '1px solid var(--green-border)' }}>
+            <div style={{ fontSize: '1.3rem', fontWeight: 700, color: 'var(--green)', fontFamily: 'var(--mono)' }}>0 Reflow</div>
+            <div style={{ fontSize: '0.8rem', color: 'var(--muted)' }}>DOM 리플로우 100% 차단</div>
+          </div>
+          <div style={{ background: '#fff', padding: '10px 14px', borderRadius: '10px', border: '1px solid var(--green-border)' }}>
+            <div style={{ fontSize: '1.3rem', fontWeight: 700, color: 'var(--green)', fontFamily: 'var(--mono)' }}>0.2µs / block</div>
+            <div style={{ fontSize: '0.8rem', color: 'var(--muted)' }}>0.0002ms 순수 산술 연산</div>
+          </div>
+          <div style={{ background: '#fff', padding: '10px 14px', borderRadius: '10px', border: '1px solid var(--green-border)' }}>
+            <div style={{ fontSize: '1.3rem', fontWeight: 700, color: 'var(--green)', fontFamily: 'var(--mono)' }}>120Hz Lock</div>
+            <div style={{ fontSize: '0.8rem', color: 'var(--muted)' }}>무한 스크롤 무감속 방어</div>
+          </div>
+        </div>
+        <div style={{ marginTop: '12px', fontSize: '0.88rem', color: 'var(--muted)', textAlign: 'center' }}>
+          💡 <strong>발상의 전환</strong>: TFC 규칙 JS 이식 → 사전 측정 + 초고속 산술
+        </div>
       </Card>
 
       {/* 2. 중단: 핵심 엔진 prepare() & layout() 카드 + 키워드 소개 */}
-      <div className="grid-2" style={{ margin: '16px 0 20px' }}>
+      <div className="grid-2" style={{ margin: '14px 0 18px' }}>
         {/* prepare() 카드 */}
-        <Card style={{ background: '#fff', borderTop: '4px solid var(--accent)' }}>
+        <Card style={{ background: '#fff', borderTop: '4px solid var(--accent)', padding: '20px' }}>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '6px' }}>
             <h3 style={{ fontSize: '1.15rem', color: 'var(--accent)', margin: 0 }}>
               <code>prepare()</code>
@@ -34,7 +40,7 @@ export const ResolveSlide: React.FC = () => {
             <span className="badge accent">Phase 1 · Cold Path</span>
           </div>
 
-          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px', margin: '10px 0 14px' }}>
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px', margin: '8px 0 12px' }}>
             <span className="badge accent">#ColdPath</span>
             <span className="badge accent">#1회측정</span>
             <span className="badge accent">#OffscreenCanvas</span>
@@ -43,24 +49,16 @@ export const ResolveSlide: React.FC = () => {
             <span className="badge accent">#너비비의존적</span>
           </div>
 
-          <ul style={{ fontSize: '0.88rem', color: 'var(--ink)', paddingLeft: '18px', lineHeight: 1.75, margin: 0 }}>
-            <li>
-              <strong>텍스트 분석 & 정규화</strong>: CSS <code>white-space</code> 명세 충실 구현 (공백 병합 및 개행 처리)
-            </li>
-            <li>
-              <strong>유니코드 세그멘테이션</strong>: <code>Intl.Segmenter</code> & UAX #14 기반 단어·구두점 단위 분절
-            </li>
-            <li>
-              <strong>1x1 OffscreenCanvas 측정</strong>: DOM 노드 생성 없이 메모리 상에서 폰트 메트릭 측정
-            </li>
-            <li>
-              <strong>불투명 핸들 반환</strong>: 전역 캐시를 거쳐 병렬 배열(너비·종류)을 담은 <code>PreparedText</code> 생성
-            </li>
-          </ul>
+          <div style={{ fontSize: '0.86rem', fontFamily: 'var(--mono)', color: 'var(--ink)', lineHeight: 1.6 }}>
+            <div>① <strong>정규화</strong>: white-space 공백 병합</div>
+            <div>② <strong>분절</strong>: Intl.Segmenter · UAX #14</div>
+            <div>③ <strong>측정</strong>: OffscreenCanvas 메모리 측정</div>
+            <div>④ <strong>적재</strong>: PreparedText 반환</div>
+          </div>
         </Card>
 
         {/* layout() 카드 */}
-        <Card style={{ background: '#fff', borderTop: '4px solid var(--green)' }}>
+        <Card style={{ background: '#fff', borderTop: '4px solid var(--green)', padding: '20px' }}>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '6px' }}>
             <h3 style={{ fontSize: '1.15rem', color: 'var(--green)', margin: 0 }}>
               <code>layout()</code>
@@ -68,7 +66,7 @@ export const ResolveSlide: React.FC = () => {
             <span className="badge green">Phase 2 · Hot Path</span>
           </div>
 
-          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px', margin: '10px 0 14px' }}>
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px', margin: '8px 0 12px' }}>
             <span className="badge green">#HotPath</span>
             <span className="badge green">#순수산술연산</span>
             <span className="badge green">#0.2µs(0.0002ms)</span>
@@ -77,27 +75,20 @@ export const ResolveSlide: React.FC = () => {
             <span className="badge green">#0DOM</span>
           </div>
 
-          <ul style={{ fontSize: '0.88rem', color: 'var(--ink)', paddingLeft: '18px', lineHeight: 1.75, margin: 0 }}>
-            <li>
-              <strong>DOM & Canvas 0회 보장</strong>: 렌더링 파이프라인 정체(Reflow)를 100% 원천 차단
-            </li>
-            <li>
-              <strong>초고속 라인 워커</strong>: 가변 <code>maxWidth</code>에서 <code>widths</code> 배열의 단순 산술 합산 (<code>lineW += w</code>)
-            </li>
-            <li>
-              <strong>CSS 명세 에뮬레이션</strong>: 후행 공백(Trailing Space) 매달림 및 단어 오버플로 분절 처리
-            </li>
-            <li>
-              <strong>즉시 높이 산출</strong>: <code>{'{ lineCount, height }'}</code>를 단 1회의 곱셈으로 0.2µs 내에 반환
-            </li>
-          </ul>
+          <div style={{ fontSize: '0.86rem', fontFamily: 'var(--mono)', color: 'var(--ink)', lineHeight: 1.6 }}>
+            <div>① <strong>Zero-DOM</strong>: Reflow 0회</div>
+            <div>② <strong>산술 합산</strong>: lineW += w 누적</div>
+            <div>③ <strong>스펙 충실</strong>: Trailing WS · Grapheme</div>
+            <div>④ <strong>즉시 반환</strong>: {'{ lineCount, height }'} 0.2µs</div>
+          </div>
         </Card>
       </div>
 
       {/* 3. 하단: 🎯 핵심 성과 Callout */}
       <Callout variant="good" title="🎯 핵심 성과 (Midjourney 프로덕션 실증)">
-        미드저니 웹 피드는 이 아키텍처를 도입하여 수만 개의 가변 높이 피드 카드가 실시간으로 스크롤·리사이즈되는 환경에서도,
-        DOM 레이아웃 계산을 <strong>0회로 원천 차단</strong>하여 <strong>120Hz 고주사율 디스플레이에서 완벽한 무감속 60~120fps</strong>를 달성했습니다.
+        <div style={{ fontSize: '0.88rem', fontFamily: 'var(--mono)', color: 'var(--ink)' }}>
+          수만 개 가변 높이 피드 → DOM 레이아웃 0회 → 120fps 무감속
+        </div>
       </Callout>
     </Slide>
   );
