@@ -46,7 +46,7 @@ export const QueuingSlide: React.FC = () => {
         <Card variant="bad">
           <h3 style={{ color: 'var(--red)' }}>✏️ 더티 플래그 마킹 (Write)</h3>
           <p style={{ fontSize: '0.84rem', color: 'var(--muted)', marginBottom: '10px' }}>
-            노드에 <code>SetNeedsLayout</code> 비트만 세팅
+            노드에 <code>SetNeedsLayout</code> 비트만 세팅해두고, 다음 vsync에 몰아서 적용
           </p>
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px', marginTop: '10px' }}>
             <code>style.width</code>
@@ -60,7 +60,7 @@ export const QueuingSlide: React.FC = () => {
         <Card variant="bad">
           <h3 style={{ color: 'var(--red)' }}>👀 레이아웃 트리거 (Read / 강제 플러시)</h3>
           <p style={{ fontSize: '0.84rem', color: 'var(--muted)', marginBottom: '10px' }}>
-            VSync 무시 → C++ 동기 호출
+            VSync 무시 → C++ 레이아웃 동기화 API 호출로 강제 계산(하면서 모여있던 더티 플래그들도 강제 실행)
           </p>
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px', marginTop: '10px' }}>
             <code>offsetHeight</code>
@@ -83,7 +83,7 @@ export const QueuingSlide: React.FC = () => {
               쓰기(Write) API 호출로 인한 더티 플래그 마킹 (Invalidation)
             </div>
             <div style={{ fontSize: '0.84rem', fontFamily: 'var(--mono)', color: 'var(--ink)' }}>
-              마킹된 상태에서 읽기(Read) API 호출로 인한 강제 레이아웃 계산 → 전역 리플로우
+              이후에 마킹된 상태에서 읽기(Read) API 호출로 인한 강제 레이아웃 계산(과정이 반복 되었을 때) → 전역 리플로우가 과도하게 발생했을 때 생기는 프레임드랍 현상
             </div>
           </div>
           <div style={{ background: '#fff', padding: '12px', borderRadius: '8px', border: '1px solid var(--green-border)' }}>

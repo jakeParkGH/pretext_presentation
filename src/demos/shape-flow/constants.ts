@@ -13,9 +13,9 @@ export const CONTAINER_HEIGHT = 418;
 
 export const SHAPE_FLOW_SNIPPETS: CodeSnippet[] = [
   {
-    tabLabel: '📱 컴포넌트 래핑 코드',
+    tabLabel: '📱 1) 좌측 / 2) 우측 순차 래핑',
     filePath: 'src/demos/ShapeFlowDemo.tsx',
-    code: `// [자유 형태 장애물 양방향 텍스트 래핑: Dual-Slot Obstacle Wrapping]
+    code: `// [자유 형태 장애물 텍스트 래핑: 1) 좌측(전체) → 2) 우측 여백 순차 채우기]
 import {
   prepareWithSegments,   // layoutNextLine()에 필요한 세그먼트 정보 보존 전처리
   layoutNextLine,        // 커서(start)부터 slotWidth 안에 들어오는 한 줄을 반환
@@ -34,26 +34,79 @@ while (lineTop + LINE_HEIGHT <= CONTAINER_HEIGHT) {
   const circleInterval = circleIntervalForBand(obstacle.x, obstacle.y, obstacle.r, bandTop, bandBottom);
   if (circleInterval !== null) blocked.push(circleInterval);
 
-  // 기본 너비에서 장애물 침범 구간을 빼내어 좌/우 가용 슬롯(Slots)으로 분할
-  const slots = carveTextLineSlots({ left: 14, right: CONTAINER_WIDTH - 14 }, blocked);
+  // 장애물 침범 구간을 제외한 가용 슬롯 분할:
+  // - 장애물이 없는 줄: [전체 한 줄(leftSlot)]
+  // - 장애물이 걸친 줄: [좌측 슬롯(leftSlot), 우측 슬롯(rightSlot)]
+  const [leftSlot, rightSlot] = carveTextLineSlots(
+    { left: 14, right: CONTAINER_WIDTH - 14 },
+    blocked
+  );
 
-  for (const slot of slots) {
-    const slotWidth = slot.right - slot.left;
+  // 1) 좌측 여백(장애물이 없는 경우 전체 한 줄) 텍스트 채우기
+  if (leftSlot) {
+    const slotWidth = leftSlot.right - leftSlot.left;
     let line = layoutNextLine(prepared, cursor, slotWidth);
-    if (!line) {
+    if (line) {
+      // 텍스트가 남아있으면 즉시 렌더링 & 커서 전진
+      renderLine(line.text, leftSlot.left, lineTop);
+      cursor = line.end;
+    } else {
+      // 텍스트 끝에 도달했으면 맨 처음으로 되감아서 렌더링 (루핑)
       cursor = { segmentIndex: 0, graphemeIndex: 0 };
       line = layoutNextLine(prepared, cursor, slotWidth);
+      if (line) {
+        renderLine(line.text, leftSlot.left, lineTop);
+        cursor = line.end;
+      }
     }
-    if (!line) continue;
+  }
 
-    renderLine(line.text, slot.left, lineTop);
-    // line.end 커서가 좌측 슬롯의 끝 지점 → 우측 슬롯의 시작 커서로 즉시 연결!
-    cursor = line.end;
+  // 2) 전체 한 줄이 아니라 장애물로 인해 '우측 여백'이 쪼개져 존재한다면 이어서 채우기
+  if (rightSlot) {
+    const slotWidth = rightSlot.right - rightSlot.left;
+    let line = layoutNextLine(prepared, cursor, slotWidth);
+    if (line) {
+      renderLine(line.text, rightSlot.left, lineTop);
+      cursor = line.end;
+    } else {
+      cursor = { segmentIndex: 0, graphemeIndex: 0 };
+      line = layoutNextLine(prepared, cursor, slotWidth);
+      if (line) {
+        renderLine(line.text, rightSlot.left, lineTop);
+        cursor = line.end;
+      }
+    }
   }
 
   lineTop += LINE_HEIGHT;
 }`,
     explanation:
-      '각 줄마다 carveTextLineSlots()로 장애물 좌/우 슬롯을 구하고, 좌측 슬롯의 끝 커서(end)를 우측 슬롯의 시작 커서로 넘겨 텍스트 연속성을 유지하며 양쪽 모두 채웁니다.',
+      '각 줄마다 carveTextLineSlots()로 슬롯을 구한 뒤, 1) 좌측(또는 전체) 한 줄을 먼저 채우고, 2) 장애물로 인해 분할된 우측 슬롯이 존재할 경우 좌측의 끝 커서(cursor.end)를 우측의 시작 커서로 즉시 넘겨 양쪽 모두 자연스럽게 채웁니다.',
+  },
+  {
+    tabLabel: '🔄 N개 장애물 확장 루프 (for...of)',
+    filePath: 'src/demos/ShapeFlowDemo.tsx',
+    code: `// [N개 장애물 일반화: 슬롯 배열 루프]
+// 화면에 장애물이 여러 개 있어서 한 줄이 [좌, 중, 우] 등 3개 이상으로 쪼개질 때도 동일하게 처리됩니다.
+for (const slot of slots) {
+  const slotWidth = slot.right - slot.left;
+  let line = layoutNextLine(prepared, cursor, slotWidth);
+
+  if (line) {
+    // 텍스트가 남아있으면 즉시 렌더링 & 커서 전진
+    renderLine(line.text, slot.left, lineTop);
+    cursor = line.end;
+  } else {
+    // 텍스트 끝 도달 시 맨 처음으로 되감아서 렌더링
+    cursor = { segmentIndex: 0, graphemeIndex: 0 };
+    line = layoutNextLine(prepared, cursor, slotWidth);
+    if (line) {
+      renderLine(line.text, slot.left, lineTop);
+      cursor = line.end;
+    }
+  }
+}`,
+    explanation:
+      '장애물이 여러 개 존재하여 한 줄이 3개 이상의 슬롯으로 분할될 때 유용한 일반화 루프 패턴입니다.',
   },
 ];
