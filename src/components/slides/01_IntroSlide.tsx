@@ -45,22 +45,22 @@ export const IntroSlide: React.FC = () => {
         <Card>
           <h3>💡 pretext 라이브러리의 탄생 배경</h3>
           <p style={{ fontSize: '0.92rem', color: 'var(--muted)' }}>
-            올해 초 전 세계 프론트엔드 생태계를 뜨겁게 달군 <strong>pretext</strong>는 단순한 화면 연출용 애니메이션 라이브러리가 아닙니다.{' '}
-            <strong>미드저니(Midjourney)</strong> 플랫폼 웹 엔지니어링 팀에서 피드 형태의 무한스크롤 및 토큰 입력 시 맞닿은 레이아웃 크기가 실시간으로 변하는 화면의 렌더링 병목을 해결하기 위해 개발되었습니다.
+            올해 초 주목받았던 라이브러리인 <strong>pretext</strong>는 단순한 화면 연출용 애니메이션 라이브러리가 아니었습니다.{' '}
+            <strong>pretext</strong>는 <strong>미드저니(Midjourney)</strong> 플랫폼 웹 엔지니어링 팀에서 피드 형태의 무한스크롤 및 토큰 입력 시 맞닿은 레이아웃 크기가 실시간으로 변하는 화면의 렌더링 병목을 해결하기 위해 개발되었습니다.
           </p>
         </Card>
         <Card>
-          <h3>🎯 이 발표에서 다루는 핵심 주제</h3>
+          <h3>🎯 이 발표에서 다루는 주제</h3>
           <ul style={{ fontSize: '0.92rem', color: 'var(--muted)', paddingLeft: '20px', lineHeight: 1.7 }}>
-            <li>웹 브라우저 렌더링 파이프라인의 진화 (RenderingNG & LFC)</li>
+            <li>웹 브라우저 렌더링 파이프라인 돌아보기</li>
             <li>Layout Queuing, VSync 신호 흐름과 Layout Thrashing의 실체</li>
-            <li>실제 구현된 5가지 인터랙티브 데모로 검증하는 마이크로초 성능</li>
+            <li>5가지 데모로 확인하는 pretext 효능</li>
           </ul>
         </Card>
       </div>
 
       <div style={{ marginTop: '32px', fontFamily: 'var(--mono)', fontSize: '0.8rem', color: 'var(--muted)', textAlign: 'center' }}>
-        Author: Jake Park · Based on <code>@chenglou/pretext</code> · MIT License
+        Author: jake.ui · Based on <code>@chenglou/pretext</code>
       </div>
     </Slide>
   );

@@ -19,7 +19,7 @@ const PIPELINE_ENGINES: PipelineEngine[] = [
   {
     tag: 'Legacy Model',
     tagVariant: 'accent',
-    name: '구형 웹킷 / 블링크 (WebCore)',
+    name: '구형 웹킷 / 초기 Blink - Legacy WebCore',
     subtitle: 'RenderObject 가변 트리 직접 변이 (동기 렌더링 락)',
     steps: [
       { title: '① DOM & Style', desc: 'Layout Tree 구성' },
@@ -78,13 +78,12 @@ export const PipelineSlide: React.FC = () => {
               {engine.steps.map((step, stepIdx) => (
                 <React.Fragment key={stepIdx}>
                   <div
-                    className={`pipeline-flow-node ${
-                      step.variant === 'danger'
-                        ? 'highlight-danger'
-                        : step.variant === 'success'
+                    className={`pipeline-flow-node ${step.variant === 'danger'
+                      ? 'highlight-danger'
+                      : step.variant === 'success'
                         ? 'highlight-success'
                         : ''
-                    }`}
+                      }`}
                   >
                     <div className="node-title">{step.title}</div>
                     <div className="node-desc">{step.desc}</div>
@@ -128,7 +127,7 @@ export const PipelineSlide: React.FC = () => {
             }}
           >
             <span>💥</span>
-            <span>LayoutNG의 압도적 비용 계층</span>
+            <span>Reflow(Layout) 재계산 비용</span>
           </div>
           <div style={{ fontSize: '12.5px', color: 'var(--ink)', lineHeight: '1.55', opacity: 0.9 }}>
             텍스트 1글자 변경이나 <code>offsetHeight</code> 단 1회 질의만으로도 브라우저는 부모·형제 노드의
