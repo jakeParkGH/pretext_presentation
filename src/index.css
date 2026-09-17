@@ -306,6 +306,137 @@ em {
 }
 
 /* ─────────────────────────────────────────────────────────────
+   Pipeline Row Diagram Styles (Blink / WebKit RenderingNG)
+   ───────────────────────────────────────────────────────────── */
+.pipeline-rows-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  margin: 20px 0;
+}
+
+.pipeline-row {
+  background: var(--panel);
+  border: 1px solid var(--rule);
+  border-radius: 14px;
+  padding: 16px 20px;
+  box-shadow: 0 2px 10px rgba(54, 40, 23, 0.03);
+  display: grid;
+  grid-template-columns: 210px 1fr;
+  gap: 18px;
+  align-items: center;
+  transition: border-color 0.15s ease, transform 0.15s ease;
+}
+
+.pipeline-row:hover {
+  border-color: var(--accent);
+}
+
+.pipeline-row-header {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.pipeline-row-title {
+  font-size: 0.98rem;
+  font-weight: 700;
+  color: var(--ink);
+  margin-top: 2px;
+}
+
+.pipeline-row-desc {
+  font-size: 0.76rem;
+  color: var(--muted);
+  line-height: 1.4;
+}
+
+.pipeline-diagram-flow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+}
+
+.pipeline-flow-node {
+  flex: 1;
+  background: var(--page);
+  border: 1px solid var(--rule);
+  border-radius: 9px;
+  padding: 10px 8px;
+  text-align: center;
+  min-width: 0;
+  transition: transform 0.12s ease;
+}
+
+.pipeline-flow-node .node-title {
+  font-size: 0.79rem;
+  font-weight: 700;
+  color: var(--ink);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.pipeline-flow-node .node-desc {
+  font-size: 0.69rem;
+  color: var(--muted);
+  font-family: var(--mono);
+  margin-top: 3px;
+  line-height: 1.25;
+}
+
+.pipeline-flow-node.highlight-danger {
+  background: var(--red-bg);
+  border-color: var(--red-border);
+}
+
+.pipeline-flow-node.highlight-danger .node-title {
+  color: var(--red);
+}
+
+.pipeline-flow-node.highlight-danger .node-desc {
+  color: var(--red);
+}
+
+.pipeline-flow-node.highlight-success {
+  background: var(--green-bg);
+  border-color: var(--green-border);
+}
+
+.pipeline-flow-node.highlight-success .node-title {
+  color: var(--green);
+}
+
+.pipeline-flow-node.highlight-success .node-desc {
+  color: var(--green);
+}
+
+.pipeline-flow-arrow {
+  color: var(--accent);
+  font-weight: 800;
+  font-size: 13px;
+  user-select: none;
+  opacity: 0.75;
+  flex-shrink: 0;
+}
+
+@media (max-width: 860px) {
+  .pipeline-row {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+  .pipeline-diagram-flow {
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+  .pipeline-flow-node {
+    min-width: 110px;
+  }
+}
+
+
+/* ─────────────────────────────────────────────────────────────
    VS Comparison Blocks
    ───────────────────────────────────────────────────────────── */
 .vs {
