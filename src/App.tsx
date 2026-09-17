@@ -7,6 +7,7 @@ import {
   ProblemSlide,
   PipelineSlide,
   QueuingSlide,
+  ResolveSlide,
   Demo1Slide,
   Demo2Slide,
   Demo3Slide,
@@ -34,6 +35,7 @@ export const App: React.FC = () => {
         <ProblemSlide />
         <PipelineSlide />
         <QueuingSlide />
+        <ResolveSlide />
         <Demo1Slide />
         <Demo2Slide />
         <Demo3Slide />

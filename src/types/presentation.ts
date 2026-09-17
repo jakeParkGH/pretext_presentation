@@ -4,6 +4,7 @@ export type SlideId =
   | 'problem'
   | 'pipeline'
   | 'queuing'
+  | 'resolve'
   | 'demo1'
   | 'demo2'
   | 'demo3'
@@ -23,6 +24,7 @@ export const NAV_ITEMS: NavItem[] = [
   { id: 'problem', label: '1-3. Problem' },
   { id: 'pipeline', label: '2-1. Pipeline' },
   { id: 'queuing', label: '2-2. VSync & Thrashing' },
+  { id: 'resolve', label: '2-3. Resolve' },
   { id: 'demo1', label: '3-1. BasicMeasure' },
   { id: 'demo2', label: '3-2. Accordion' },
   { id: 'demo3', label: '3-3. Streaming' },

@@ -41,37 +41,16 @@ export const IntroSlide: React.FC = () => {
         </div>
       </div>
 
-      <div style={{ marginTop: '28px' }}>
-        <Card style={{ borderLeft: '4px solid var(--accent)', background: 'var(--panel)' }}>
-          <h3 style={{ marginBottom: '16px', fontSize: '1.18rem', color: 'var(--accent)' }}>
+      <div style={{ marginTop: '32px' }}>
+        <Card style={{ borderLeft: '4px solid var(--accent)' }}>
+          <h3 style={{ marginBottom: '14px', fontSize: '1.18rem', color: 'var(--accent)' }}>
             🎯 이 발표에서 다루는 주제
           </h3>
-          <div className="grid-3" style={{ margin: 0, gap: '16px' }}>
-            <div style={{ background: '#fff', padding: '16px 18px', borderRadius: '12px', border: '1px solid var(--rule-light)' }}>
-              <div style={{ fontWeight: 600, color: 'var(--ink)', marginBottom: '6px', fontSize: '0.95rem' }}>
-                ⚙️ 렌더링 파이프라인
-              </div>
-              <p style={{ fontSize: '0.88rem', color: 'var(--muted)', margin: 0, lineHeight: 1.55 }}>
-                웹 브라우저 렌더링 파이프라인 돌아보기
-              </p>
-            </div>
-            <div style={{ background: '#fff', padding: '16px 18px', borderRadius: '12px', border: '1px solid var(--rule-light)' }}>
-              <div style={{ fontWeight: 600, color: 'var(--ink)', marginBottom: '6px', fontSize: '0.95rem' }}>
-                ⏱️ VSync & Thrashing
-              </div>
-              <p style={{ fontSize: '0.88rem', color: 'var(--muted)', margin: 0, lineHeight: 1.55 }}>
-                Layout Queuing, VSync 신호 흐름과 Layout Thrashing의 실체
-              </p>
-            </div>
-            <div style={{ background: '#fff', padding: '16px 18px', borderRadius: '12px', border: '1px solid var(--rule-light)' }}>
-              <div style={{ fontWeight: 600, color: 'var(--ink)', marginBottom: '6px', fontSize: '0.95rem' }}>
-                🚀 5대 인터랙티브 데모
-              </div>
-              <p style={{ fontSize: '0.88rem', color: 'var(--muted)', margin: 0, lineHeight: 1.55 }}>
-                5가지 데모로 확인하는 pretext 효능
-              </p>
-            </div>
-          </div>
+          <ul style={{ fontSize: '0.95rem', color: 'var(--ink)', paddingLeft: '22px', lineHeight: 1.85, margin: 0 }}>
+            <li>웹 브라우저 렌더링 파이프라인 돌아보기</li>
+            <li>Layout Queuing, VSync 신호 흐름과 Layout Thrashing의 실체</li>
+            <li>5가지 데모로 확인하는 pretext 효능</li>
+          </ul>
         </Card>
       </div>
 

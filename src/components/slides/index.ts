@@ -3,6 +3,7 @@ export * from './02_BackgroundSlide';
 export * from './02_ProblemSlide';
 export * from './03_PipelineSlide';
 export * from './04_QueuingSlide';
+export * from './04_2_ResolveSlide';
 export * from './05_Demo1Slide';
 export * from './06_Demo2Slide';
 export * from './07_Demo3Slide';
