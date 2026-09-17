@@ -51,21 +51,6 @@ export const TopNav: React.FC<TopNavProps> = ({
         >
           Pretext
         </a>
-        <span
-          style={{
-            fontFamily: 'var(--mono)',
-            fontSize: '0.72rem',
-            background: 'var(--accent-soft)',
-            color: 'var(--accent)',
-            border: '1px solid var(--accent-border)',
-            padding: '2px 8px',
-            borderRadius: '999px',
-            fontWeight: 600,
-            letterSpacing: '0.04em',
-          }}
-        >
-          Zero-Reflow Engine
-        </span>
       </div>
 
       <nav

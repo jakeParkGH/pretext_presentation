@@ -21,9 +21,9 @@ export const ResolveSlide: React.FC = () => {
         {/* prepare() 카드 */}
         <Card style={{ background: '#fff', borderTop: '4px solid var(--accent)', padding: '18px 20px' }}>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '6px' }}>
-            <h3 style={{ fontSize: '1.15rem', color: 'var(--ink)', margin: 0 }}>
-              핵심 API ①:
-              <code style={{ fontSize: '1.15rem', color: 'var(--ink)', margin: 0 }}>prepare(text, font, options)</code>
+            <h3 style={{ fontSize: '1.0rem', color: 'var(--ink)', margin: 0 }}>
+              <span style={{ flexShrink: 0 }}>핵심 API ①:</span>
+              <code style={{ fontSize: '1.0rem', color: 'var(--ink)', margin: 0 }}>prepare(text,font,options)</code>
             </h3>
           </div>
 
@@ -50,9 +50,9 @@ export const ResolveSlide: React.FC = () => {
         {/* layout() 카드 */}
         <Card style={{ background: '#fff', borderTop: '4px solid var(--green)', padding: '18px 20px' }}>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '6px' }}>
-            <h3 style={{ fontSize: '1.15rem', color: 'var(--ink)', margin: 0 }}>
-              핵심 API ②:
-              <code style={{ fontSize: '1.15rem', color: 'var(--ink)', margin: 0 }}>layout(prepared, maxWidth, lineHeight)</code>
+            <h3 style={{ fontSize: '1.0rem', color: 'var(--ink)', margin: 0 }}>
+              <span style={{ flexShrink: 0 }}>핵심 API ②:</span>
+              <code style={{ fontSize: '1.0rem', color: 'var(--ink)', margin: 0, whiteSpace: 'nowrap' }}>layout(prepared,maxWidth,lineHeight)</code>
             </h3>
           </div>
 

@@ -433,3 +433,73 @@ function calculateTotalListHeight(containerWidth: number): number {
   return totalHeight;
 }
 ```
+
+---
+
+## 6. 간단 Prepare 동작원리 요약
+
+### 1. 문장 전체를 재는 게 아니라 "단어(세그먼트)" 단위로 잽니다
+
+`prepare("Hello world", font)`를 호출하면, 문장 전체를 통째로 넘기지 않습니다.
+
+- **텍스트 분석 (Analysis)**:  
+  먼저 `Intl.Segmenter`와 유니코드 줄바꿈 규칙(UAX #14)으로 텍스트를 줄바꿈 가능한 조각(Segment)으로 쪼갭니다.  
+  `["Hello", " ", "world"]`
+- **세그먼트별 순회 측정 (Measurement)**:  
+  쪼개진 조각들을 하나씩 꺼내서 1×1 OffscreenCanvas의 `ctx.measureText()`에 넣고 가로폭을 측정합니다.
+
+```typescript
+// measurement.ts 내부 로직 (단순화)
+const cache = segmentMetricCaches.get(font);
+for (const seg of segments) {
+  // 1. 캐시 확인: 이미 잰 적이 있는 단어인가?
+  if (cache.has(seg)) {
+    widths.push(cache.get(seg).width); // 캔버스 호출 생략 (0ms)
+    continue;
+  }
+  // 2. 캐시에 없으면 OffscreenCanvas로 측정!
+  const textMetrics = ctx.measureText(seg);
+  const width = textMetrics.width; // 예: 42.1875px
+  // 3. 캐시에 영구 저장
+  cache.set(seg, { width });
+  widths.push(width);
+}
+```
+
+### 2. `ctx.measureText()`로 브라우저에게 무엇을 얻어내는가?
+
+자바스크립트 자체는 폰트 파일(`.ttf`, `.woff2`)의 내부 구조를 해석할 능력이 없습니다. `ctx.measureText()`를 호출하는 순간 브라우저 내부의 **C++ 폰트 셰이핑 엔진(HarfBuzz / CoreText)**이 작동합니다.
+
+- **글리프 전진폭(Glyph Advance Width)**: 글자 하나하나가 차지하는 본래 가로 길이
+- **커닝(Kerning)**: 예를 들어 AV, To, We 처럼 특정 알파벳 쌍이 만났을 때 글자 사이가 좁혀지는 미세 간격
+- **합자(Ligature)**: fi, fl 처럼 두 글자가 하나로 합쳐지는 특수 폰트 디자인
+
+브라우저가 폰트 파일과 C++ 레벨에서 연산한 **가장 완벽하고 정밀한 수평 픽셀 길이(소수점 단위)**를 자바스크립트가 width 숫자 하나로 쏙 빼오는 것입니다.
+
+### 3. 단순 측정을 넘어선 `ctx.measureText()`의 정밀 테크닉들
+
+Pretext는 단순히 단어만 넣고 끝내지 않고, 실제 브라우저 DOM 렌더링과의 1px 오차도 없애기 위해 몇 가지 영리한 방식으로 measureText를 활용합니다.
+
+#### ① 뒤따르는 공백 커닝 보정 (`seg + ' '`)
+사파리(WebKit)는 단어 뒤에 띄어쓰기 공백이 붙으면 단어 끝 글자와 공백 사이를 커닝으로 좁혀서 렌더링합니다.  
+Pretext는 사파리 환경일 때 `ctx.measureText(seg + ' ').width`를 별도로 재서, 줄바꿈 직전 공백과의 상호작용 너비를 완벽하게 일치시킵니다.
+
+#### ② 긴 단어/CJK 글자 페어 측정 (pair-context)
+가로폭이 너무 좁아서 단어 중간이 잘려야 하거나(한글/한자/일본어 또는 긴 URL), 글자 단위 줄바꿈이 일어날 때를 대비합니다.  
+글자 하나씩만 재서 더하면 글자 사이 커닝이 누락되므로, 두 글자씩 묶어서 `ctx.measureText('가나').width - ctx.measureText('가').width` 방식으로 **글자 사이의 미세 전진폭 배열(breakableFitAdvances)**을 미리 뽑아둡니다.
+
+#### ③ 하이픈(Hyphen) 너비 미리 확보
+긴 단어가 줄바꿈될 때 붙는 소프트 하이픈(-)의 너비도 미리 `ctx.measureText('-').width`로 한 번 재둡니다.
+
+### 4. 최종 결과물: 순수 숫자 배열로 변환
+
+`prepare()`가 끝나면 거대했던 텍스트와 폰트 객체는 전부 사라지고, 오직 다음의 가벼운 결과물만 남습니다.
+
+```javascript
+prepared = {
+  widths: [42.18, 4.4, 38.25], // 순수 숫자 배열 (number[])
+  kinds: ['text', 'space', 'text']
+}
+```
+
+이제 이 숫자들이 준비되었기 때문에, 이후 창 크기를 아무리 리사이즈해도 `ctx.measureText()`나 Canvas를 다시는 부르지 않고, `layout()` 함수가 저 숫자들만 덧셈해서 0.001ms 만에 줄바꿈 높이를 뱉어내는 것입니다.

@@ -10,7 +10,7 @@ export const QueuingSlide: React.FC = () => {
       subtitle="VSync 신호와 강제 플러시의 메커니즘"
     >
       <Card style={{ marginBottom: '20px', padding: '18px 20px' }}>
-        <h3 style={{ color: 'var(--accent)', marginBottom: '8px', fontSize: '1.05rem' }}>VSync 신호 전달 흐름 (디스플레이 → 메인 스레드)</h3>
+        <h3 style={{ color: 'var(--accent)', marginBottom: '8px', fontSize: '1.05rem' }}>VSync(수직동기화)신호 전달 흐름 (디스플레이 → 메인 스레드)</h3>
         <div className="flow" style={{ margin: '12px 0 6px', justifyContent: 'space-between' }}>
           <div className="flow-box" style={{ flex: '1 1 140px', minWidth: '130px', padding: '10px 8px' }}>
             디스플레이 H/W

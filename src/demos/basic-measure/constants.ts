@@ -26,6 +26,12 @@ const LINE_HEIGHT = 26;
 // 2. OffscreenCanvas를 통해 단어별 너비 1회 측정 및 캐싱
 // 3. 반환값: 불변 병렬 배열을 담은 불투명 핸들 (PreparedText)
 // ⚠️ 주의: 리사이즈 루프 안에서 호출하면 안 되며, 텍스트가 바뀔 때만 실행!
+//
+// 💡 prepare() 반환 데이터 구조 예시:
+// prepared = {
+//   widths: [42.18, 4.4, 38.25], // 순수 숫자 배열 (number[])
+//   kinds: ['text', 'space', 'text']
+// }
 const prepared = prepare(text, FONT);
 
 // [Phase 2: Hot Path - 순수 산술 연산]
